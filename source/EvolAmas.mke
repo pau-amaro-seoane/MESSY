@@ -1,0 +1,818 @@
+SHELL = /bin/zsh
+
+# Possible values for variable SYSTEM: MACOSX, SOLARIS_SPARC 
+# (leave no space after the value, below!)
+# For linux, the MACOSX settings (using GNU compilers) should be fine
+
+# IMPORTANT: use the same compiler as when you compiled libfxdr.a
+# Here I assume that the version compiled with g77 is called libfxdr_g77.a, 
+# the version compiled with g95 libfxr_g95.a, etc.
+
+ifeq ($(SYSTEM),)
+SYSTEM=MACOSX#
+endif
+
+# Possible values: for MACOSX: g77, g95, gfortran
+#                  for SOLARIS_SPARC (IoA): g77, f95 
+# On Solaris at the IoA, g77 is recommended as there are issues with fxdr compiled with f95 (when run with grid software)
+# Leave no space after the value!
+ifeq ($(COMP),)
+COMP=g95#
+endif
+# Nom generique
+
+NOM = EvolAmas
+
+# Nom executable
+
+EXE = __evolamas__$(SYSTEM)__$(COMP)
+
+# Makefile
+
+MKE = $(NOM).mke
+
+# Divers
+
+TEMP = $(HOME)
+SOU  = $(NOM).F
+OBJ  = $(NOM).o
+
+# Libraires et leurs chemins d'acces
+
+INC = -I$$HOME/include/ #-I/usr/include/
+ACC = -L$$HOME/lib #-L/usr/lib
+
+# Options de compilation
+#------------------------
+COMP_TYPE = standard
+
+ifeq ($(SYSTEM),MACOSX)
+
+ifeq ($(COMP),g77)
+OPT = -pipe -fno-silent -ffixed-line-length-none -Wall -Wno-unused -O3
+OPT_FPP = -D_COMPIL_=2
+OPT_LINK = #-static
+LIB = -lfxdr_g77
+SYSTEM_OK=1
+endif
+
+ifeq ($(COMP),g95)
+OPT = -ffixed-line-length-132 -pipe -O3
+OPT_FPP = -D_COMPIL_=6
+OPT_LINK = #-static
+LIB = -lfxdr_g95
+SYSTEM_OK=1
+endif
+
+ifeq ($(COMP),gfortran)
+OPT = -ffixed-line-length-132 -pipe -O3
+OPT_FPP = -D_COMPIL_=6
+OPT_LINK = #-static
+LIB = -lfxdr_gfortran
+SYSTEM_OK=1
+endif
+
+endif
+
+ifeq ($(SYSTEM),SOLARIS_SPARC)
+
+ifeq ($(COMP),g77)
+OPT =  -pipe -fno-silent -ffixed-line-length-none -Wall -Wno-unused -O3 -m32
+OPT_FPP = -D_COMPIL_=2
+OPT_LINK = #-Bstatic
+LIB = -lfxdr-g77-32bits -lnsl
+SYSTEM_OK=1
+endif
+
+ifeq ($(COMP),f95)
+OPT = -w1 -e -ftrap=common -f77=output -O3
+OPT_FPP = -D_COMPIL_=5
+OPT_LINK = #-Bstatic
+LIB = -lfxdr-f95-64bits -lnsl
+SYSTEM_OK=1
+endif
+
+endif
+
+ifeq ($(SYSTEM_OK),)
+
+all :
+	@print -u2 Combination SYSTEM=\"$(SYSTEM)\" COMP=\"$(COMP)\" unrecognised in Makefile
+endif
+
+
+OPT_FPP := $(OPT_FPP) \
+\
+-D_SURV_CROISS_TEMPS_=0 \
+-D_SURVEILLE_SQRT_=0  \
+-D_TEST_MODIF_PROP_SE_ACT_=0 \
+-D_NO_DF_=0 \
+-D_NO_FLUSH_=0 \
+\
+-D_ECRIT_ETOILES_=1   \
+-D_ECRIT_CB3C_=0      \
+-D_ECRIT_RAYLAG_=1    \
+-D_ECRIT_ANILAG_=1    \
+-D_ECRIT_SEGR_=1      \
+-D_ECRIT_RELAX_=0     \
+-D_ECRIT_COLL_=1      \
+-D_ECRIT_DUPLIC_=0    \
+-D_ECRIT_EVAP_=1      \
+-D_ECRIT_LC_=1        \
+-D_ECRIT_CAPT_GW_=0   \
+-D_WRITE_CUMUL_COLL_PROB_=0 \
+-D_ECRIT_SUIVI_TYPES_STELL_=1 \
+-D_ECRIT_SUIVI_SE_PART_=0 \
+-D_ECRIT_ARBRE_=0     \
+-D_ECRIT_PROFILPOT_=0 \
+-D_ECRIT_TH_=0        \
+-D_ECRIT_RAND_=0      \
+-D_ECRIT_GRILLE_=0    \
+-D_ECRIT_PG_=0        \
+-D_ECRIT_TSCALE_=1    \
+-D_ECRIT_SPECMASSE_=0 \
+-D_ECRIT_STEVOL_=0    \
+-D_ECRIT_NATKICKS_=0  \
+-D_ECRIT_LAGQUANT_=1  \
+-D_MONITOR_MBINS_=0   \
+-D_MONITOR_STRONG_ENCOUNTERS_=0 \
+-D_WRITE_COLL_EXCEPTIONS_=0 \
+-D_FOLLOW_SUBPOP_=0 \
+\
+-D_PRESENCE_TN_=1        \
+-D_TRONC_MAREE_=0        \
+-D_LIMITE_EXT_=0         \
+-D_EMPECHE_EVAP_RELAX_=1 \
+\
+-D_DEPL_ORBITAL_=1    \
+-D_RELAXATION_=1      \
+-D_KICKS_=0           \
+-D_COLLISIONS_=1      \
+-D_DECHIREMENTS_=1    \
+-D_DISPARITIONS_=1    \
+-D_CAPT_GW_=0         \
+-D_EVOL_STELL_=1      \
+-D_NATKICKS_=1        \
+-D_ACCR_BY_STARS_=0   \
+-D_CHAUFF_BIN_3C_=0   \
+\
+-D_COLLISION_CHECK_ORBIT_OVERLAP_=0 \
+-D_TYPE_COLL_=10       \
+-D_TRAITEMENT_COLL_MS_RMN_=2 \
+-D_COLL_REJUV_=2      \
+-D_HARDEN_SPH_COLL_TREATMENT_=3 \
+\
+-D_CONST_R_TID_DISRUP_=0 \
+-D_TYPE_TREL_GW_=0 \
+-D_TYPE_FOR_MR_RELATION_=0 \
+\
+-D_FIGER_RMAR_=0      \
+-D_AJUST_PASSIF_=0    \
+-D_SURV_ADIAB_=0      \
+-D_TYPE_LOG_COUL_=0   \
+-D_EVOL_UNE_SE_=0     \
+-D_STATIQUE_=0        \
+-D_RELAX_NULLE_=0     \
+-D_COLL_NULLES_=0     \
+-D_DECHIR_NULS_=0     \
+-D_FORCER_CROISSANCE_TN_=0 \
+-D_DUPLICATION_=0     \
+\
+-D_VERBOSITUDE_=5 \
+-D_VERB_PERTES_=0 \
+-D_VERB_STELLEVOL_=0 \
+-D_VERB_EVAP_=0   \
+-D_VERB_COLL_=0   \
+-D_VERB_INTERP_RESCOLL_=1 \
+\
+-D_SYM_M1_M2_=1   \
+-D_RAY_LAG_SPECIAL_=0 \
+
+# Objets pouvants etre traites de maniere standard
+
+OBJn =\
+ AmasIO_ASC.o \
+ AmasIO_XDR.o \
+ CheckAmas.o \
+ EvolAmas_AccretionByStars.o \
+ EvolAmas_AniLag.o \
+ EvolAmas_Arbre.o \
+ EvolAmas_ArbreIO.o \
+ EvolAmas_CalcGlob.o \
+ EvolAmas_Collisions.o \
+ EvolAmas_Conserv_IO.o \
+ EvolAmas_CumulProb.o \
+ EvolAmas_Duplic.o \
+ EvolAmas_Etoiles.o \
+ EvolAmas_Evap.o \
+ EvolAmas_EvolStell.o \
+ EvolAmas_Grille.o \
+ EvolAmas_GrilleIO.o \
+ EvolAmas_IO.o \
+ EvolAmas_Init.o \
+ EvolAmas_IntegrOrb.o \
+ EvolAmas_LagQuantities.o \
+ EvolAmas_LimExt.o \
+ EvolAmas_LossCone.o \
+ EvolAmas_Maree.o \
+ EvolAmas_MassSpectrum.o \
+ EvolAmas_Meurt.o \
+ EvolAmas_NonInterac.o \
+ EvolAmas_ParamIO.o \
+ EvolAmas_RayLag.o \
+ EvolAmas_Relax.o \
+ EvolAmas_RelMR.o \
+ EvolAmas_stellar_interface.o \
+ EvolAmas_SolveRoche.o \
+ EvolAmas_SubPop.o \
+ EvolAmas_SuiviMbins.o \
+ EvolAmas_SuiviSE.o \
+ EvolAmas_SuiviSegr.o \
+ EvolAmas_SuiviTypesStell.o \
+ EvolAmas_Temps.o \
+ EvolAmas_TN.o \
+ EvolAmas_TirageHenon3.o \
+ EvolAmas_TirOrb2.o \
+ EvolAmas_Tri.o \
+ Machine_Dependent.o \
+ Moindres_Carres.o \
+ PeriApo_SE2.o \
+ RandomGauss.o \
+ RK2dbl.o \
+ Utils_Chaines.o \
+ XDR_Ecrit.o \
+ indexx_NR.o \
+ interp_ResColl_exploit.o \
+ locate_NR.o \
+ random.o \
+ rtsafe_NR.o \
+ rtsafe_rel_NR.o \
+ selip_NR.o \
+ shell_NR.o \
+ spline_NR.o \
+ test_modif_prop_orb_SE_act.o \
+ xdr_read_string.o
+
+#----------------------------------------------------------------------
+#	Les instructions a executer proprement dites
+#----------------------------------------------------------------------
+
+# production de l'executable
+
+$(EXE): $(OBJ) $(OBJn) _WritePreprocDefines_.o $(MKE) 
+	[[ ! -f $(EXE) ]] || mv $(EXE) $(EXE).BAK
+	$(COMP) $(OPT) $(OPT_LINK) $(ACC)  -o $(EXE) $(OBJ) $(OBJn) _WritePreprocDefines_.o $(LIB)
+	#rm _WritePreprocDefines_.f
+
+_WritePreprocDefines_.f : $(OBJ) $(OBJn)
+	mke2list_preproc_defines.sh $(MKE) | CreateFortranPrintCodeForListPreprocDefines.sh > _WritePreprocDefines_.f
+
+# Regle generale pour produire les objets
+
+%.o : %.F $(MKE)
+	$(COMP) $(OPT) $(INC) $(OPT_FPP) -c $<
+
+%.o : %.f $(MKE)
+	$(COMP) $(OPT) $(INC) -c $<
+
+# Regles(ou complements) particulier(e)s
+#
+# Ici, il s'agit d'objets ayant des dependances supplementaire
+
+
+
+
+
+#%%# MAJ PAR /Users/freitag/util/maj_make.pl
+#%%# date et heure : Sun Mar  2 13:05:04 GMT 2008
+
+
+# Les includes dans les fichiers programme :
+# -------------------------------------------
+
+$(OBJ) : \
+ CstesMath.f \
+ EvolAmas_ChauffBin3c_common.f \
+ EvolAmas_Collision_inc.f \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_CtrlCentre_inc.f \
+ EvolAmas_CumulProb_common.f \
+ EvolAmas_Etoiles_common.f \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_EvolStell_common.f \
+ EvolAmas_GW_common.f \
+ EvolAmas_GlobTech_common.f \
+ EvolAmas_Glob_common.f \
+ EvolAmas_Grille_common.f \
+ EvolAmas_Grille_param.f \
+ EvolAmas_LimExt_common.f \
+ EvolAmas_LossCone_inc.f \
+ EvolAmas_Maree_common.f \
+ EvolAmas_NbPas_common.f \
+ EvolAmas_NonInterac_common.f \
+ EvolAmas_PaireRenc_inc.f \
+ EvolAmas_PeriApo_inc.f \
+ EvolAmas_Relax_common.f \
+ EvolAmas_Relax_param.f \
+ EvolAmas_Rencontre_inc.f \
+ EvolAmas_SEact_inc.f \
+ EvolAmas_StrEnc_param.f \
+ EvolAmas_SuiviTypesStell_common.f \
+ EvolAmas_TirOrb2_common.f \
+ EvolAmas_inc.f \
+ EvolAmas_param.f \
+ Flag_common.f \
+ PhysQuantities.f
+
+AmasIO_ASC.o : \
+ AmasIO_ASC_inc.f
+
+AmasIO_XDR.o : \
+ AmasIO_XDR_inc.f \
+ EvolAmas_Pertes_inc.f
+
+CheckAmas.o : \
+ CstesMath.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_TN_common.f \
+ Param_Amas.f \
+ PeriApo_SE2_diags_common.f \
+ PeriApo_SE2_diags_param.f \
+ VarSE.f
+
+EvolAmas_AccretionByStars.o : \
+ EvolAmas_Conserv_inc.f \
+ EvolAmas_Dimensions_common.f \
+ EvolAmas_Param_common.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_Temps_common.f \
+ Param_Amas.f \
+ VarSE.f
+
+EvolAmas_AniLag.o : \
+ EvolAmas_AniLag_common.f \
+ EvolAmas_AniLag_inc.f \
+ EvolAmas_Temps_common.f
+
+EvolAmas_Arbre.o : \
+ EvolAmas_Arbre_inc.f \
+ EvolAmas_Compteurs_common.f
+
+EvolAmas_ArbreIO.o : \
+ EvolAmas_ArbreIO_inc.f
+
+EvolAmas_CalcGlob.o : \
+ EvolAmas_CalcGlob_inc.f
+
+EvolAmas_Collisions.o : \
+ EvolAmas_Collisions_SPH_inc.f \
+ EvolAmas_Collisions_inc.f \
+ EvolAmas_Collisions_param.f \
+ EvolAmas_Etoiles_param.f
+
+EvolAmas_Conserv_IO.o : \
+ EvolAmas_Conserv_IO_inc.f \
+ EvolAmas_Param_common.f
+
+EvolAmas_CumulProb.o : \
+ EvolAmas_CumulProb_common.f \
+ EvolAmas_Pertes_inc.f \
+ Param_Amas.f \
+ VarSE.f
+
+EvolAmas_Duplic.o : \
+ EvolAmas_Grille_common.f \
+ EvolAmas_Grille_param.f \
+ EvolAmas_PeriApo_inc.f \
+ EvolAmas_inc.f \
+ Flag_common.f
+
+EvolAmas_Etoiles.o : \
+ EvolAmas_Etoiles_inc.f \
+ EvolAmas_Param_common.f
+
+EvolAmas_Evap.o : \
+ EvolAmas_Grille_common.f \
+ EvolAmas_Grille_param.f \
+ EvolAmas_inc.f
+
+EvolAmas_EvolStell.o : \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_EvolStell_common.f \
+ EvolAmas_EvolStell_param.f \
+ EvolAmas_param.f
+
+EvolAmas_Grille.o : \
+ EvolAmas_Grille_inc.f \
+ EvolAmas_Param_common.f
+
+EvolAmas_GrilleIO.o : \
+ EvolAmas_Grille_inc.f
+
+EvolAmas_IO.o : \
+ EvolAmas_Collisions_SPH_inc.f \
+ EvolAmas_GlobTech_common.f \
+ EvolAmas_Glob_common.f \
+ EvolAmas_inc.f
+
+EvolAmas_Init.o : \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_Maree_common.f \
+ EvolAmas_Relax_common.f \
+ EvolAmas_inc.f
+
+EvolAmas_IntegrOrb.o : \
+ EvolAmas_IntegrOrb_GC_inc.f \
+ EvolAmas_IntegrOrb_inc.f
+
+EvolAmas_LagQuantities.o : \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_RayLag_inc.f \
+ EvolAmas_Temps_common.f
+
+EvolAmas_LimExt.o : \
+ EvolAmas_LimExt_common.f \
+ EvolAmas_TN_common.f
+
+EvolAmas_LossCone.o : \
+ CstesMath.f \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_GW_common.f \
+ EvolAmas_TN_common.f \
+ EvolAmas_param.f \
+ Param_Amas.f
+
+EvolAmas_Maree.o : \
+ EvolAmas_Conserv_inc.f \
+ EvolAmas_Maree_common.f \
+ EvolAmas_Maree_inc.f
+
+EvolAmas_MassSpectrum.o : \
+ EvolAmas_MassSpectrum_inc.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_Temps_common.f \
+ EvolAmas_common.f \
+ Param_Amas.f \
+ VarSE.f
+
+EvolAmas_Meurt.o : \
+ EvolAmas_PaireRenc_inc.f \
+ EvolAmas_SEact_inc.f \
+ EvolAmas_inc.f
+
+EvolAmas_NonInterac.o : \
+ EvolAmas_NonInterac_inc.f
+
+EvolAmas_ParamIO.o : \
+ EvolAmas_Param_common.f \
+ EvolAmas_param.f
+
+EvolAmas_RayLag.o : \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_RayLag_common.f \
+ EvolAmas_RayLag_inc.f \
+ EvolAmas_Temps_common.f
+
+EvolAmas_RelMR.o : \
+ EvolAmas_RelMR_inc.f
+
+EvolAmas_Relax.o : \
+ EvolAmas_Grille_common.f \
+ EvolAmas_Grille_param.f \
+ EvolAmas_LambdaRelax_common.f \
+ EvolAmas_Relax_common.f \
+ EvolAmas_Relax_inc.f \
+ EvolAmas_TN_common.f
+
+EvolAmas_SubPop.o : \
+ EvolAmas_SubPop_common.f \
+ Param_Amas.f \
+ VarSE.f
+
+EvolAmas_SuiviMbins.o : \
+ EvolAmas_SuiviMbins_common.f \
+ EvolAmas_SuiviMbins_inc.f \
+ EvolAmas_Temps_common.f \
+ EvolAmas_common.f
+
+EvolAmas_SuiviSE.o : \
+ EvolAmas_SuiviSE_inc.f
+
+EvolAmas_SuiviSegr.o : \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_SuiviSegr_common.f \
+ EvolAmas_SuiviSegr_inc.f \
+ EvolAmas_Temps_common.f
+
+EvolAmas_SuiviTypesStell.o : \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_SuiviTypesStell_common.f \
+ EvolAmas_SuiviTypesStell_inc.f \
+ EvolAmas_param.f
+
+EvolAmas_TN.o : \
+ EvolAmas_Dimensions_common.f \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_TN_inc.f \
+ EvolAmas_common.f
+
+EvolAmas_Temps.o : \
+ EvolAmas_Temps_inc.f
+
+EvolAmas_TirOrb2.o : \
+ CstesMath.f \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_LimExt_common.f \
+ EvolAmas_TirOrb2_inc.f \
+ Flag_common.f \
+ test_modif_prop_orb_SE_act_inc.f
+
+EvolAmas_TirageHenon3.o : \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_Conserv_inc.f \
+ EvolAmas_LambdaRelax_common.f \
+ EvolAmas_Param_common.f \
+ EvolAmas_Relax_common.f \
+ EvolAmas_TN_common.f \
+ EvolAmas_TirageHenon3_inc.f \
+ EvolAmas_common.f \
+ EvolAmas_param.f
+
+EvolAmas_Tri.o : \
+ EvolAmas_Tri_inc.f
+
+EvolAmas_stellar_interface.o : \
+ EvolAmas_Etoiles_inc.f \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_EvolStell_common.f \
+ EvolAmas_TN_common.f \
+ EvolAmas_Temps_common.f \
+ Param_Amas.f
+
+PeriApo_SE2.o : \
+ EvolAmas_Pertes_inc.f \
+ Flag_common.f \
+ PeriApo_SE2_inc.f
+
+RK2dbl.o : \
+ RK2dbl_common.f \
+ RK2dbl_param.f
+
+XDR_Ecrit.o : \
+ XDR_Ecrit_inc.f
+
+interp_ResColl_exploit.o : \
+ interp_ResColl_exploit_inc.f
+
+test_modif_prop_orb_SE_act.o : \
+ test_modif_prop_orb_SE_act_inc.f
+
+
+# Et voici les includes contenant des includes :
+# ----------------------------------------------
+
+AmasIO_ASC_inc.f : \
+ EvolAmas_Maree_common.f \
+ EvolAmas_TN_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f AmasIO_ASC_inc.f ]] && touch AmasIO_ASC_inc.f
+
+AmasIO_XDR_inc.f : \
+ AmasIO_XDR_common.f \
+ CstesMath.f \
+ Param_Amas.f \
+ VarSE.f \
+ XDR_NomsTypes_param.f
+	[[ -f AmasIO_XDR_inc.f ]] && touch AmasIO_XDR_inc.f
+
+EvolAmas_AniLag_inc.f : \
+ CstesMath.f \
+ EvolAmas_AniLag_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_AniLag_inc.f ]] && touch EvolAmas_AniLag_inc.f
+
+EvolAmas_ArbreIO_inc.f : \
+ EvolAmas_Arbre_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_ArbreIO_inc.f ]] && touch EvolAmas_ArbreIO_inc.f
+
+EvolAmas_Arbre_inc.f : \
+ EvolAmas_Arbre_common.f \
+ EvolAmas_LimExt_common.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_TN_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Arbre_inc.f ]] && touch EvolAmas_Arbre_inc.f
+
+EvolAmas_CalcGlob_inc.f : \
+ CstesMath.f \
+ EvolAmas_Glob_common.f \
+ EvolAmas_Pertes_inc.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_CalcGlob_inc.f ]] && touch EvolAmas_CalcGlob_inc.f
+
+EvolAmas_Collisions_SPH_inc.f : \
+ Glob_Collisions_SPH_inc.f \
+ Grille_Collisions_SPH_inc.f
+	[[ -f EvolAmas_Collisions_SPH_inc.f ]] && touch EvolAmas_Collisions_SPH_inc.f
+
+EvolAmas_Collisions_inc.f : \
+ CstesMath.f \
+ CstesPhys.f \
+ EvolAmas_Collisions_param.f \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_Param_common.f \
+ EvolAmas_param.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Collisions_inc.f ]] && touch EvolAmas_Collisions_inc.f
+
+EvolAmas_Conserv_IO_inc.f : \
+ EvolAmas_Conserv_inc.f
+	[[ -f EvolAmas_Conserv_IO_inc.f ]] && touch EvolAmas_Conserv_IO_inc.f
+
+EvolAmas_Etoiles_inc.f : \
+ CstesMath.f \
+ EvolAmas_Dimensions_common.f \
+ EvolAmas_Etoiles_common.f \
+ EvolAmas_Etoiles_param.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Etoiles_inc.f ]] && touch EvolAmas_Etoiles_inc.f
+
+EvolAmas_Grille_inc.f : \
+ CstesMath.f \
+ EvolAmas_Grille_common.f \
+ EvolAmas_Grille_param.f \
+ EvolAmas_Pertes_inc.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Grille_inc.f ]] && touch EvolAmas_Grille_inc.f
+
+EvolAmas_IntegrOrb_inc.f : \
+ CstesMath.f \
+ EvolAmas_IntegrOrb_GC_inc.f \
+ EvolAmas_Relax_common.f \
+ Param_Amas.f
+	[[ -f EvolAmas_IntegrOrb_inc.f ]] && touch EvolAmas_IntegrOrb_inc.f
+
+EvolAmas_Maree_inc.f : \
+ EvolAmas_Maree_common.f \
+ EvolAmas_TN_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Maree_inc.f ]] && touch EvolAmas_Maree_inc.f
+
+EvolAmas_NonInterac_inc.f : \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_NonInterac_common.f
+	[[ -f EvolAmas_NonInterac_inc.f ]] && touch EvolAmas_NonInterac_inc.f
+
+EvolAmas_RayLag_inc.f : \
+ CstesMath.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_RayLag_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_RayLag_inc.f ]] && touch EvolAmas_RayLag_inc.f
+
+EvolAmas_RelMR_inc.f : \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_RelMR_common.f \
+ EvolAmas_RelMR_param.f
+	[[ -f EvolAmas_RelMR_inc.f ]] && touch EvolAmas_RelMR_inc.f
+
+EvolAmas_Relax_inc.f : \
+ CstesMath.f \
+ EvolAmas_Arbre_common.f \
+ EvolAmas_Dimensions_common.f \
+ EvolAmas_Param_common.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_Relax_common.f \
+ EvolAmas_Relax_param.f \
+ EvolAmas_Temps_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Relax_inc.f ]] && touch EvolAmas_Relax_inc.f
+
+EvolAmas_SuiviMbins_inc.f : \
+ CstesMath.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_SuiviMbins_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_SuiviMbins_inc.f ]] && touch EvolAmas_SuiviMbins_inc.f
+
+EvolAmas_SuiviSE_inc.f : \
+ CstesMath.f \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_PaireRenc_inc.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_SEact_inc.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_SuiviSE_inc.f ]] && touch EvolAmas_SuiviSE_inc.f
+
+EvolAmas_SuiviSegr_inc.f : \
+ CstesMath.f \
+ EvolAmas_SuiviSegr_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_SuiviSegr_inc.f ]] && touch EvolAmas_SuiviSegr_inc.f
+
+EvolAmas_SuiviTypesStell_inc.f : \
+ CstesMath.f \
+ EvolAmas_Etoiles_param.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_SuiviTypesStell_common.f \
+ EvolAmas_param.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_SuiviTypesStell_inc.f ]] && touch EvolAmas_SuiviTypesStell_inc.f
+
+EvolAmas_TN_inc.f : \
+ CstesMath.f \
+ CstesPhys.f \
+ EvolAmas_TN_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_TN_inc.f ]] && touch EvolAmas_TN_inc.f
+
+EvolAmas_Temps_inc.f : \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_Temps_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Temps_inc.f ]] && touch EvolAmas_Temps_inc.f
+
+EvolAmas_TirOrb2_inc.f : \
+ EvolAmas_TirOrb2_common.f \
+ Param_Amas.f
+	[[ -f EvolAmas_TirOrb2_inc.f ]] && touch EvolAmas_TirOrb2_inc.f
+
+EvolAmas_TirageHenon3_inc.f : \
+ CstesMath.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_Temps_common.f \
+ EvolAmas_TirageHenon3_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_TirageHenon3_inc.f ]] && touch EvolAmas_TirageHenon3_inc.f
+
+EvolAmas_Tri_inc.f : \
+ EvolAmas_CtrlCentre_inc.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_Tri_inc.f ]] && touch EvolAmas_Tri_inc.f
+
+EvolAmas_common.f : \
+ EvolAmas_Compteurs_common.f \
+ EvolAmas_Dimensions_common.f
+	[[ -f EvolAmas_common.f ]] && touch EvolAmas_common.f
+
+EvolAmas_inc.f : \
+ CstesMath.f \
+ CstesPhys.f \
+ EvolAmas_Arbre_common.f \
+ EvolAmas_Conserv_inc.f \
+ EvolAmas_Param_common.f \
+ EvolAmas_Pertes_inc.f \
+ EvolAmas_TN_common.f \
+ EvolAmas_Temps_common.f \
+ EvolAmas_common.f \
+ EvolAmas_param.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f EvolAmas_inc.f ]] && touch EvolAmas_inc.f
+
+PeriApo_SE2_inc.f : \
+ CstesMath.f \
+ EvolAmas_Arbre_common.f \
+ EvolAmas_LimExt_common.f \
+ EvolAmas_PeriApo_inc.f \
+ EvolAmas_TN_common.f \
+ Param_Amas.f \
+ PeriApo_SE2_common.f \
+ PeriApo_SE2_diags_common.f \
+ PeriApo_SE2_diags_param.f \
+ PeriApo_SE2_param.f \
+ VarSE.f
+	[[ -f PeriApo_SE2_inc.f ]] && touch PeriApo_SE2_inc.f
+
+XDR_Ecrit_inc.f : \
+ XDR_NomsTypes_param.f
+	[[ -f XDR_Ecrit_inc.f ]] && touch XDR_Ecrit_inc.f
+
+interp_ResColl_exploit_inc.f : \
+ Glob_Collisions_SPH_inc.f \
+ Grille_Collisions_SPH_inc.f
+	[[ -f interp_ResColl_exploit_inc.f ]] && touch interp_ResColl_exploit_inc.f
+

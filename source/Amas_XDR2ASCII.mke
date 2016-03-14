@@ -1,0 +1,114 @@
+SHELL = /bin/zsh
+
+# Nom generique
+#---------------
+
+NOM = Amas_XDR2ASCII
+
+# Nom executable
+#----------------
+
+EXE = amas_xdr2ascii
+
+# Options de compilation
+#------------------------
+COMP_TYPE = standard
+COMP=g77
+OPT = -fno-silent -ffixed-line-length-none -Wall -Wno-unused -O3 -pipe
+OPT_FPP = -D_COMPIL_=2
+
+OPT_FPP := $(OPT_FPP)
+
+# Makefile
+
+MKE = $(NOM).mke
+
+# Divers
+
+TEMP = $(HOME)
+SOU  = $(NOM).F
+OBJ  = $(NOM).o
+
+# Libraires et leurs chemins d'acces
+
+INC = -I$$HOME/include/ -I/usr/include/
+ACC = -L$$HOME/lib -L/usr/lib
+LIB = -lfxdr
+
+# Objets complementaires
+
+OBJn =\
+ AmasIO_XDR.o \
+ AmasIO_ASC.o \
+ XDR_Ecrit.o \
+ Meurt.o \
+ Utils_Chaines.o \
+ random.o \
+ xdr_read_string.o
+
+#####################################################
+#----------------------------------------------------------------------
+#	Les instructions a executer proprement dites
+#----------------------------------------------------------------------
+
+# production de l'executable
+
+$(EXE): $(OBJ) $(OBJn) $(MKE) 
+	[[ ! -f $(EXE) ]] || mv $(EXE) $(EXE).BAK
+	$(COMP) $(OPT) $(ACC)  -o $(EXE) $(OBJ) $(OBJn) $(LIB)
+
+# Regle generale pour produire les objets
+
+%.o : %.F $(MKE)
+	$(COMP) $(OPT) $(INC) $(OPT_FPP) -c $<
+
+%.o : %.f $(MKE)
+	$(COMP) $(OPT) $(INC) -c $<
+
+# Regles(ou complements) particulier(e)s
+#
+# Ici, il s'agit d'objets ayant des dependances supplementaire
+
+
+
+#%%# MAJ PAR /Users/freitag/util/maj_make.pl
+#%%# date et heure : Fri May 23 10:13:53 BST 2008
+
+
+# Les includes dans les fichiers programme :
+# -------------------------------------------
+
+AmasIO_ASC.o : \
+ AmasIO_ASC_inc.f \
+ EvolAmas_Pertes_inc.f
+
+AmasIO_XDR.o : \
+ AmasIO_XDR_inc.f \
+ EvolAmas_Pertes_inc.f
+
+XDR_Ecrit.o : \
+ XDR_Ecrit_inc.f
+
+
+# Et voici les includes contenant des includes :
+# ----------------------------------------------
+
+AmasIO_ASC_inc.f : \
+ EvolAmas_Maree_common.f \
+ EvolAmas_TN_common.f \
+ Param_Amas.f \
+ VarSE.f
+	[[ -f AmasIO_ASC_inc.f ]] && touch AmasIO_ASC_inc.f
+
+AmasIO_XDR_inc.f : \
+ AmasIO_XDR_common.f \
+ CstesMath.f \
+ Param_Amas.f \
+ VarSE.f \
+ XDR_NomsTypes_param.f
+	[[ -f AmasIO_XDR_inc.f ]] && touch AmasIO_XDR_inc.f
+
+XDR_Ecrit_inc.f : \
+ XDR_NomsTypes_param.f
+	[[ -f XDR_Ecrit_inc.f ]] && touch XDR_Ecrit_inc.f
+

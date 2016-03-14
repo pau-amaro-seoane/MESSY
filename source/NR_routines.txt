@@ -1,0 +1,32 @@
+The following routines from the numerical recipes are required.
+
+They have to be adapted to double precision (real*8)
+
+Furthermore, ME(SSY)**2 also uses a modified verion of rtsafe ("rtsafe_rel")
+which has the following interface: 
+   double precision function rtsafe_rel(funcd,x1,x2,xacc_rel)
+where xacc_rel is the required _relative_ accuracy of the root determination.
+I.e. you need to use a test of the following sort:
+   if (abs(dx).lt.(xacc_rel*abs(rtsafe_rel)+1.0d-20)) then
+at the appropriate place ;-)
+ 
+
+dawson
+erfcc
+gammln
+indexx
+locate
+midpnt
+midsql
+odeint
+polint
+qromb
+qromo
+rkck
+rkqs
+rtsafe
+selip
+shell
+spline
+trapzd
+

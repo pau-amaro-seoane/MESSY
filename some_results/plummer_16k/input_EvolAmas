@@ -1,0 +1,195 @@
+# Fichier de parametres pour EvolAmas.F
+# Exemple genere automatiquement par /home/freitag/AMAS/util/EvolAmas_Param_rdb2input.sh
+
+Type_CtrObj_def      # Default type of central object (TN or MS)
+    TN   # Valeur par defaut : TN
+
+NomSimul             # Nom de la simulation; sert a former les noms de fichiers
+    MyRun   # Valeur par defaut : _EvolAmas
+
+Coef_Trlx_GW_Capt    # Fudge factor on trelax when compared to GW-inspiral time for GW-capture
+    1.0d0   # Valeur par defaut : 1.0d0
+
+CollAccrFrac_MS_on_BH # Fraction of mass of the MS star accreted onto BH if MS star tidally disrupted (for _TRAITEMENT_COLL_MS_RMN_=2)
+    0.5d0   # Valeur par defaut : 0.5d0
+
+CollAccrFrac_MS_on_NS # Fraction of mass of the MS star accreted onto NS if MS star tidally disrupted (for _TRAITEMENT_COLL_MS_RMN_=2)
+    0.0d0   # Valeur par defaut : 0.0d0
+
+CollAccrFrac_MS_on_WD # Fraction of mass of the MS star accreted onto WD if MS star tidally disrupted (for _TRAITEMENT_COLL_MS_RMN_=2)
+    0.0d0   # Valeur par defaut : 0.0d0
+
+CollDminDestr_MS_vs_RMN # Distance below which the MS star is completely destroyed in encounters with compact stars (for _TRAITEMENT_COLL_MS_RMN_=1)
+    0.5d0   # Valeur par defaut : 0.5d0
+
+CollMassLossFracDef  # Flat fractional mass loss in simplistic collisional treatment
+    0.0d0   # Valeur par defaut : 0.0d0
+
+FacMaxPG             # Facteur determinant le nb max de SE/cellule
+    1.5d0   # Valeur par defaut : 1.5d0
+
+FacMinPG             # Facteur determinant le nb min de SE/cellule
+    0.5d0   # Valeur par defaut : 0.5d0
+
+FacNbPasDetEvap      # Facteur determinant le nb de pas entre deux determinations des SE evaporees
+    1.0d0   # Valeur par defaut : 1.0d0
+
+FacNbPasDetTrelExtremes # Facteur determinant le nb de pas entre deux determinations des Trelax extremes
+    0.5d0   # Valeur par defaut : 0.5d0
+
+FacNbPasInfo         # Facteur determinant le nb de pas entre deux affichages dinfo a lecran
+    1.0d0   # Valeur par defaut : 1.0d0
+
+FacNbPasRecArbre     # Facteur determinant le nb de pas entre deux reconstruction de larbre
+    2.0d0   # Valeur par defaut : 2.0d0
+
+FacNbPasRecCB3c      # Facteur determinant le nb de pas entre deux recalcul des parametres de chauffage par les binaires 3-corps
+    0.5d0   # Valeur par defaut : 0.5d0
+
+FacNbPasRecRelax     # Facteur determinant le nb de pas entre deux recalcul des parametres de relax
+    10.0d0   # Valeur par defaut : 10.0d0
+
+FacNbPasRecTpsAmas   # Facteur determinant le nb de pas entre deux determination du temps de lamas
+    1.0d0   # Valeur par defaut : 1.0d0
+
+FacNbPasRecalcTH     # Facteur determinant le nb de pas entre deux calculs des parametres de la loi de probabilite de tirage des SE
+    0.5d0   # Valeur par defaut : 0.5d0
+
+FacNbPasSauv         # Facteur determinant le nb de pas entre deux sauvegardes completes
+    5.0d0   # Valeur par defaut : 5.0d0
+
+FacNbPasSauvPart     # Facteur determinant le nb de pas entre deux sauvegardes partielles
+    1.0d0   # Valeur par defaut : 1.0d0
+
+FacNbPasTestDemSauv  # Facteur determinant le nb de pas entre deux tests pour demande de sauvegarde
+    0.1d0   # Valeur par defaut : 0.1d0
+
+FacNbPasTestDuplic   # Facteur determinant le nb de pas entre deux tests pour duplication des SE
+    0.5d0   # Valeur par defaut : 0.5d0
+
+Fac_SldAvg_Tscale    # Multiply NbSECouchePot by this to get the number of particles the sliding average is made over for time scale compuation in Calc_Tcarac
+    5.0d0   # Valeur par defaut : 5.0d0
+
+Fac_dt_accr_M        # facteur determinant le pas de temps pour le calcul de la repartition de la masse accretee sur le TN et restant dans le reservoir central, variation relative de la masse accretee
+    0.01d0   # Valeur par defaut : 0.01d0
+
+Fac_dt_accr_Npart    # idem Fac_dt_accr_M, en nb de particules "moyennes"
+    10.0d0   # Valeur par defaut : 10.0d0
+
+FactR_CC             # Facteur sur la distance au centre pour le "controle central"
+    0.5d0   # Valeur par defaut : 0.5d0
+
+FactTrelMax          # Rapport max entre Trel et le Trel_min (pour pas de tps)
+    1.0d3   # Valeur par defaut : 1.0d3
+
+FracPas_AjustPassif  # Fraction des pas correspondant a un deplacement orbital passif (dt=0)
+    0.0d0   # Valeur par defaut : 0.0d0
+
+Frac_Taccr           # max dt / tps croissance objet central
+    0.01d0   # Valeur par defaut : 0.01d0
+
+Frac_Tadiab          # max dt / tps evol du pot (adiabatique)
+    0.01d0   # Valeur par defaut : 0.01d0
+
+Frac_Tcoll           # max dt / tps collision
+    0.01d0   # Valeur par defaut : 0.01d0
+
+Frac_Tevap           # max dt / tps perte de masse globale (evaporation)
+    0.01d0   # Valeur par defaut : 0.01d0
+
+Frac_Tevst           # max dt / tps evolution stellaire
+    0.025d0   # Valeur par defaut : 0.025d0
+
+Frac_Tkick           # max dt / tps deviation grands angles
+    0.01d0   # Valeur par defaut : 0.01d0
+
+Frac_Trelax          # max dt / tps relax
+    0.01d0   # Valeur par defaut : 0.01d0
+
+Frac_dt_max          # Valeur max de dt/Trel_loc (lors dun sous-pas de relax)
+    1.0d0   # Valeur par defaut : 1.0d0
+
+Gamma_relax          # Le coefficient de proportionalite dans le log. coulombien
+    0.14d0   # Valeur par defaut : 0.14d0
+
+M_TN_ini_def         # Default initial mass of central object
+    0.0d0   # Valeur par defaut : 0.0d0
+
+MasseEtoileDef       # Masse de chaque etoile en masse solaire (par defaut)
+    1.0d0   # Valeur par defaut : 1.0d0
+
+Mu_mol_elec          # Masse moleculaire par electron du gaz constituant les etoiles
+    1.13d0   # Valeur par defaut : 1.13d0
+
+R_Mar_ini_def        # Rayon de troncature initial (par defaut)
+    1.0d30   # Valeur par defaut : 1.0d30
+
+R_tid_disr_def_NB    # Tidal disruption radius all stars in NB-units when _CONST_R_TID_DISRUP_>0
+    1.0d-7   # Valeur par defaut : 1.0d-7
+
+StellMet_def         # default stellar metallicity (solar)
+    0.02d0   # Valeur par defaut : 0.02d0
+
+T_fin                # Temps final a atteindre (unites de Tff pour lamas)
+    1.0d5   # Valeur par defaut : 1.0d5
+
+Tadiab_ini           # valeur initial du tps dvolution du pote (arbitraire, doit etre plus court que le reste)
+    0.1d0   # Valeur par defaut : 0.1d0
+
+TailleAmas_en_pc     # "taille" de lamas en parsec (conversion unite de taille -> pc)
+    3.0d0   # Valeur par defaut : 10.0d0
+
+Tmax_GW_Capt_Gyr     # Maximum inspiral time considered for GW captures, in Gyr
+    1.0d30   # Valeur par defaut : 1.0d30
+
+Trlx_GW_def_Gyr      # Relaxation time when a constant value is used to look for captures (_TYPE_TREL_GW_=2; not recommended)
+    1.0d0   # Valeur par defaut : 1.0d0
+
+effic_conv_lum       # efficacite de la conversion de masse en energie lors de laccretion
+    0.0d0   # Valeur par defaut : 0.0d0
+
+fact_b0_kick         # Facteur de terminant la section efficace des deviation a grand angles (en unites de b0)
+    2.0d0   # Valeur par defaut : 2.0d0
+
+frac_accr_Coll       # fraction de la masse liberee par les collisions accretee sur le TN
+    1.0d0   # Valeur par defaut : 1.0d0
+
+frac_accr_Dechir     # fraction de la masse liberee par les dechirements accretee sur le TN
+    1.0d0   # Valeur par defaut : 1.0d0
+
+frac_accr_EvolSt     # fraction de la masse liberee par l evolution stellaire accretee sur le TN
+    1.0d0   # Valeur par defaut : 1.0d0
+
+rNbEtoiles           # Nb (initial) total detoiles
+    1.0d6   # Valeur par defaut : 1.0d6
+
+DeltaRang_Paire      # Difference de rang entre les 2 particules dune paire
+    1   # Valeur par defaut : 1
+
+NbSECoucheCB3c       # Nb de SE par element de la grille servant a calculer le chauffage par les binaires 3-corps
+    1000   # Valeur par defaut : 1000
+
+NbSECouchePot        # Nb de SE par cellule de la grille
+    25   # Valeur par defaut : 25
+
+NbSauv_Conserve      # 1 sauvegarde (fichiers XDR) sur NbSauv_Conserve est conservee, les autres effacees au fur et a mesure
+    5   # Valeur par defaut : 5
+
+Rang_CC              # Nombre de SE soumises au "controle central"
+    10   # Valeur par defaut : 10
+
+TypeEtoileDef        # Type des etoiles par defaut (1=sequence principale)
+    1   # Valeur par defaut : 1
+
+iRand_Seed           # Graine pour le generateur de nb aleatoires
+    133111   # Valeur par defaut : 133111
+
+iVerbeux             # Defini la quantite dinformation fournie a lecran durant la simulation
+    1   # Valeur par defaut : 1
+
+i_fin                # Valeur finale du compteur de pas (a atteindre)
+    2000000000   # Valeur par defaut : 2000000000
+
+i_ini                # Valeur initiale du compteur de pas
+    0   # Valeur par defaut : 0
+

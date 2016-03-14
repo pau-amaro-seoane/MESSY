@@ -1,0 +1,112 @@
+SHELL = /usr/bin/ksh
+
+# Nom generique
+#---------------
+
+NOM = Amas_XDR2Nbody
+
+# Nom executable
+#----------------
+
+EXE = amas_xdr2nbody
+
+# Options de compilation
+#------------------------
+
+COMP_TYPE = standard
+COMP=g77
+OPT = -fno-silent -ffixed-line-length-none -Wall -Wno-unused -O3 -pipe
+OPT_FPP = -D_COMPIL_=2
+
+OPT_FPP := $(OPT_FPP)
+
+# Makefile
+
+MKE = $(NOM).mke
+
+# Divers
+
+TEMP = $(HOME)
+SOU  = $(NOM).F
+OBJ  = $(NOM).o
+
+# Libraires et leurs chemins d'acces
+
+INC = -I$$HOME/include/ -I/usr/include/
+ACC = -L$$HOME/lib -L/usr/lib -L/lib 
+LIB = -lfxdr
+
+
+# Objets pouvants etre traites de maniere standard
+
+OBJn =\
+ AmasIO_XDR.o \
+ AmasIO_ASC.o \
+ XDR_Ecrit.o \
+ Meurt.o \
+ Utils_Chaines.o \
+ random.o \
+ xdr_read_string.o
+
+#----------------------------------------------------------------------
+#	Les instructions a executer proprement dites
+#----------------------------------------------------------------------
+
+# Regles(ou complements) particulier(e)s
+#
+# Ici, il s'agit d'objets ayant des dependances supplementaire
+
+
+# production de l'executable
+
+$(EXE): $(OBJ) $(OBJn) $(MKE) 
+	[[ ! -f $(EXE) ]] || mv $(EXE) $(EXE).BAK
+	$(COMP) $(OPT) $(OPT_LINK) $(ACC)  -o $(EXE) $(OBJ) $(OBJn) $(LIB)
+
+# Regle generale pour produire les objets
+
+%.o : %.F $(MKE)
+	$(COMP) $(OPT) $(INC) $(OPT_FPP) -c $<
+
+%.o : %.f $(MKE)
+	$(COMP) $(OPT) $(INC) -c $<
+
+
+#%%# MAJ PAR /home/hydro/freitag/scripts/maj_make.pl
+#%%# date et heure : Tue Dec  7 16:52:16 MET 1999
+
+
+# Les includes dans les fichiers programme :
+# -------------------------------------------
+
+AmasIO_ASC.o : \
+ AmasIO_ASC_inc.f
+
+AmasIO_XDR.o : \
+ AmasIO_XDR_inc.f \
+ EvolAmas_Pertes_inc.f
+
+XDR_Ecrit.o : \
+ XDR_Ecrit_inc.f
+
+
+# Et voici les includes contenant des includes :
+# ----------------------------------------------
+
+AmasIO_ASC_inc.f : \
+ Param_Amas.f \
+ VarSE.f
+	touch AmasIO_ASC_inc.f
+
+AmasIO_XDR_inc.f : \
+ AmasIO_XDR_common.f \
+ CstesMath.f \
+ Param_Amas.f \
+ VarSE.f \
+ XDR_NomsTypes_param.f
+	touch AmasIO_XDR_inc.f
+
+XDR_Ecrit_inc.f : \
+ XDR_NomsTypes_param.f
+	touch XDR_Ecrit_inc.f
+
