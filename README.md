@@ -39,7 +39,7 @@ License:
 The license is:
 
 ```
-    Copyright (c) 2008, Marc Dewi Freitag & Pau Amaro Seoane
+    Copyright (c) 2008, Pau Amaro Seoane & Marc Dewi Freitag
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the “Software”), to deal
